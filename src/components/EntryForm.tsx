@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  CalendarDays,
   CalendarPlus,
   CheckCircle2,
   Gavel,
@@ -20,7 +19,6 @@ import {
   CASE_NO_PREFIX_OPTIONS,
   COURT_OPTIONS,
   DECISION_OPTIONS,
-  MONTHS,
   REMU_OPTIONS,
   YEARS,
 } from '@/lib/options';
@@ -33,8 +31,6 @@ interface EntryFormProps {
 }
 
 const emptyForm = (): Omit<MediationRecord, 'id' | 'createdAt'> => ({
-  statementMonth: '',
-  statementYear: '',
   mediationCasePart: '',
   mediationCaseYear: '',
   decision: '',
@@ -63,8 +59,6 @@ export function EntryForm({ onSave }: EntryFormProps) {
 
   const validate = (): boolean => {
     const e: RecordErrors = {};
-    if (!form.statementMonth) e.statementMonth = 'Required';
-    if (!form.statementYear) e.statementYear = 'Required';
     if (!form.mediationCasePart.trim()) e.mediationCasePart = 'Required';
     if (!form.mediationCaseYear) e.mediationCaseYear = 'Required';
     if (!form.decision) e.decision = 'Required';
@@ -111,49 +105,6 @@ export function EntryForm({ onSave }: EntryFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-      {/* Statement Period */}
-      <FormSection icon={<CalendarDays className="h-5 w-5 text-gold-500" />} title="Statement Period">
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div data-error={!!errors.statementMonth}>
-            <label className="field-label" htmlFor="stmt-month">
-              Statement Month <span className="text-gold-500">*</span>
-            </label>
-            <select
-              id="stmt-month"
-              className={`field-select ${errors.statementMonth ? 'border-red-400 focus:ring-red-200' : ''}`}
-              value={form.statementMonth}
-              onChange={(e) => update('statementMonth', e.target.value)}
-            >
-              <option value="" disabled>Select month…</option>
-              {MONTHS.map((m) => (
-                <option key={m} value={m}>{m}</option>
-              ))}
-            </select>
-            {errors.statementMonth && (
-              <p className="mt-1.5 text-xs font-medium text-red-500">{errors.statementMonth}</p>
-            )}
-          </div>
-          <div data-error={!!errors.statementYear}>
-            <label className="field-label" htmlFor="stmt-year">
-              Statement Year <span className="text-gold-500">*</span>
-            </label>
-            <select
-              id="stmt-year"
-              className={`field-select ${errors.statementYear ? 'border-red-400 focus:ring-red-200' : ''}`}
-              value={form.statementYear}
-              onChange={(e) => update('statementYear', e.target.value)}
-            >
-              <option value="" disabled>Select year…</option>
-              {YEARS.map((y) => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
-            {errors.statementYear && (
-              <p className="mt-1.5 text-xs font-medium text-red-500">{errors.statementYear}</p>
-            )}
-          </div>
-        </div>
-      </FormSection>
 
       {/* Field 1 — Mediation Case No. */}
       <FormSection icon={<Hash className="h-5 w-5 text-gold-500" />} title="Mediation Case No.">

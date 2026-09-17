@@ -1,8 +1,5 @@
 export interface MediationRecord {
   id: string;
-  // Target metadata
-  statementMonth: string;
-  statementYear: string;
   // 1. Mediation Case No.
   mediationCasePart: string; // Field 1A — text before slash
   mediationCaseYear: string; // Field 1B — year dropdown
