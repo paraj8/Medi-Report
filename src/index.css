@@ -62,14 +62,18 @@
 }
 
 /* ===== Print styles for official PDF export ===== */
+
 @media print {
   @page {
     margin: 12mm;
     size: A4 landscape;
   }
 
-  body {
+  html,
+  body,
+  .app-container {
     background: white !important;
+    background-image: none !important;
   }
 
   /* Hide everything not in the print area */

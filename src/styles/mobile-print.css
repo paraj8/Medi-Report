@@ -1,0 +1,70 @@
+/* ===== Mobile Print ===== */
+
+@media print and (max-width: 600px) {
+  @page {
+    size: A4 landscape;
+    margin: 6mm;
+  }
+
+  html,
+  body {
+    width: 100% !important;
+    min-width: 0 !important;
+    background: white !important;
+  }
+
+  .app-container {
+    width: 100% !important;
+    min-height: 0 !important;
+    background: white !important;
+    background-image: none !important;
+  }
+
+  .print-area {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    border: none !important;
+    box-shadow: none !important;
+
+    transform: none !important;
+  }
+
+  .print-area table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    font-size: 7px !important;
+  }
+
+  .print-area th,
+  .print-area td {
+    padding: 3px 2px !important;
+    line-height: 1.15 !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .print-area tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .print-area thead {
+    display: table-header-group !important;
+  }
+
+  .print-area table,
+  .print-area th,
+  .print-area td {
+    border-color: #333 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print-area thead tr {
+    background: #eceef2 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

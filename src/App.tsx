@@ -29,7 +29,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-ink-900">
+    <div className="min-h-screen bg-ink-700 app-container">
       {/* Header */}
       <header className="no-print sticky top-0 z-30 border-b border-ink-200/80 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
