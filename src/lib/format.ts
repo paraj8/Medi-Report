@@ -26,6 +26,23 @@ export function formatDateDMY(iso: string): string {
   return `${d}-${m}-${y}`;
 }
 
+/** Extract the month name from an ISO date string (yyyy-mm-dd). */
+export function isoMonthName(iso: string): string {
+  if (!iso) return '';
+  const parts = iso.split('-');
+  if (parts.length !== 3) return '';
+  const m = Number(parts[1]) - 1;
+  return MONTHS[m] || '';
+}
+
+/** Extract the year from an ISO date string (yyyy-mm-dd). */
+export function isoYear(iso: string): string {
+  if (!iso) return '';
+  const parts = iso.split('-');
+  if (parts.length !== 3) return '';
+  return parts[0];
+}
+
 /** Join an array of ISO date strings into a comma-separated display string (for CSV). */
 export function formatMediationDates(dates: string[]): string {
   if (!dates || dates.length === 0) return '—';

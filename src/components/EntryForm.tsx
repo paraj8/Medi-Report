@@ -32,17 +32,17 @@ interface EntryFormProps {
 
 const emptyForm = (): Omit<MediationRecord, 'id' | 'createdAt'> => ({
   mediationCasePart: '',
-  mediationCaseYear: '',
-  decision: '',
+  mediationCaseYear: '2026',
+  decision: 'Successful',
   caseNoPrefix: '',
   caseNoNumber: '',
-  caseNoYear: '',
+  caseNoYear: '2026',
   reffDate: '',
   firstParty: '',
   secondParty: '',
   mediationDates: [''],
-  nameOfCourt: '',
-  remu: '',
+  nameOfCourt: 'The S.D.J.M Rajmahal Sahibganj',
+  remu: '5000',
 });
 
 export function EntryForm({ onSave }: EntryFormProps) {
@@ -115,7 +115,7 @@ export function EntryForm({ onSave }: EntryFormProps) {
             </label>
             <input
               id="med-part"
-              type="text"
+              type="number"
               className={`field-input ${errors.mediationCasePart ? 'border-red-400 focus:ring-red-200' : ''}`}
               placeholder='e.g. 31, 16(i)'
               value={form.mediationCasePart}

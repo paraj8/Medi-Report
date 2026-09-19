@@ -19,11 +19,14 @@ export const DECISION_OPTIONS = ['Successful', 'Unsuccessful'];
 
 export const CASE_NO_PREFIX_OPTIONS = [
   'Org. Suit. No.',
-  'Org.Maint no.',
-  'CC no.',
+  'Org. Maint No.',
   'Org. (D) Suit. No.',
+  'Org. (P) Suit No.',
+  'A.B.P. No.',
+  'CC no.',
+  'G.R. Case No.',
   'Tinphar Ps. No',
-  'Org. (P) Suit no.',
+
 ];
 
 export const COURT_OPTIONS = [
@@ -31,6 +34,8 @@ export const COURT_OPTIONS = [
   'The S.D.J.M Rajmahal Sahibganj',
   'The Sr. Civil Judge 1st Rajmahal Sahibganj',
   'The A.C.J.M. Rajmahal',
+  'The dist. & Addl Session Judge-1 Rajmahal',
+  'Miss Mansi J.M. 1st class Rajmahal Sahibganj',
 ];
 
 export const REMU_OPTIONS = ['5000', '2500', '1000'];

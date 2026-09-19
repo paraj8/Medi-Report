@@ -1,6 +1,6 @@
 import type { MediationRecord } from '@/types';
 
-const STORAGE_KEY = 'mediation_records_v1';
+const STORAGE_KEY = 'mediation_records_v2';
 
 export function loadRecords(): MediationRecord[] {
   try {

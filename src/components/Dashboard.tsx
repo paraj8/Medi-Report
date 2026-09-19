@@ -2,7 +2,10 @@ import { useMemo, useState } from 'react';
 import { Download, FileText, Inbox, Printer } from 'lucide-react';
 import type { MediationRecord } from '@/types';
 import { MONTHS } from '@/lib/options';
-import { formatDateDMY, formatMediationDatesStacked } from '@/lib/format';
+import {
+  formatDateDMY,
+  formatMediationDatesStacked,
+} from '@/lib/format';
 import { recordsToCsv, downloadCsv } from '@/lib/csv';
 
 interface DashboardProps {
@@ -14,40 +17,51 @@ const REPORT_YEARS = ['2024', '2025', '2026', '2027'];
 
 export function Dashboard({ records, onDelete }: DashboardProps) {
   const [filterMonth, setFilterMonth] = useState('');
-  const [filterYear, setFilterYear] = useState('');
+const [filterYear, setFilterYear] = useState('');
 
-  const filtered = useMemo(() => {
-    return records
-      .filter((r) => {
-        if (filterMonth && r.statementMonth !== filterMonth) return false;
-        if (filterYear && r.statementYear !== filterYear) return false;
-        return true;
-      })
-      .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
-  }, [records, filterMonth, filterYear]);
+const filtered = useMemo(() => {
+  return records
+    .filter((r) => r.reffDate)
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+}, [records]);
 
-  const totals = useMemo(() => {
-    const successful = filtered.filter((r) => r.decision === 'Successful').length;
-    const unsuccessful = filtered.filter((r) => r.decision === 'Unsuccessful').length;
-    const remuSum = filtered.reduce((sum, r) => {
-      const n = Number(r.remu);
-      return sum + (Number.isFinite(n) ? n : 0);
-    }, 0);
-    return { total: filtered.length, successful, unsuccessful, remuSum };
-  }, [filtered]);
+const totals = useMemo(() => {
+  const successful = filtered.filter(
+    (r) => r.decision === 'Successful'
+  ).length;
 
-  const hasPeriod = filterMonth && filterYear;
+  const unsuccessful = filtered.filter(
+    (r) => r.decision === 'Unsuccessful'
+  ).length;
 
-  const handleExportCsv = () => {
-    const csv = recordsToCsv(filtered);
-    const monthLabel = filterMonth ? filterMonth.slice(0, 3) : 'All';
-    const yearLabel = filterYear || 'All';
-    downloadCsv(`mediation_${monthLabel}_${yearLabel}.csv`, csv);
+  const remuSum = filtered.reduce((sum, r) => {
+    const n = Number(r.remu);
+    return sum + (Number.isFinite(n) ? n : 0);
+  }, 0);
+
+  return {
+    total: filtered.length,
+    successful,
+    unsuccessful,
+    remuSum,
   };
+}, [filtered]);
 
-  const handlePrint = () => {
-    window.print();
-  };
+const handleExportCsv = () => {
+  const csv = recordsToCsv(filtered);
+
+  const monthLabel = filterMonth
+    ? filterMonth.slice(0, 3)
+    : 'All';
+
+  const yearLabel = filterYear || 'All';
+
+  downloadCsv(`mediation_${monthLabel}_${yearLabel}.csv`, csv);
+};
+
+const handlePrint = () => {
+  window.print();
+};
 
   return (
     <div className="space-y-6">
@@ -111,25 +125,18 @@ export function Dashboard({ records, onDelete }: DashboardProps) {
             </button>
           </div>
         </div>
-        {!hasPeriod && (
-          <p className="mt-3 text-xs text-ink-400">
-            Select a specific month and year to generate the official statement report.
-          </p>
-        )}
       </div>
 
       {/* Report — visible in print */}
       {filtered.length === 0 ? (
         <div className="no-print flex flex-col items-center justify-center rounded-xl border border-ink-200 bg-white px-6 py-20 text-center shadow-card">
           <Inbox className="mb-3 h-10 w-10 text-ink-300" />
-          <p className="text-sm font-medium text-ink-500">
-            {hasPeriod
-              ? `No records found for ${filterMonth} ${filterYear}`
-              : 'No records match the current filters'}
-          </p>
-          <p className="mt-1 text-xs text-ink-400">
-            Adjust the filters above or add a new record on the Entry tab.
-          </p>
+            <p className="text-sm font-medium text-ink-500">
+              No records found
+            </p>
+            <p className="mt-1 text-xs text-ink-400">
+              Add a new record on the Entry tab.
+            </p>
         </div>
       ) : (
         <div id="print-area" className="print-area rounded-xl border border-ink-200 bg-white p-8 shadow-card sm:p-10">
@@ -201,22 +208,22 @@ export function Dashboard({ records, onDelete }: DashboardProps) {
           </div>
 
           {/* Aggregation footer */}
-<div className="relative mt-3 text-sm text-ink-800">
-  {/* Centered */}
-  <div className="flex justify-center gap-8">
-    <span>
-      <span className="font-semibold">Success</span> = {totals.successful}
-    </span>
-    <span>
-      <span className="font-semibold">Unsuccess</span> = {totals.unsuccessful}
-    </span>
-  </div>
+          <div className="relative mt-3 text-sm text-ink-800">
+            {/* Centered */}
+            <div className="flex justify-center gap-8">
+              <span>
+                <span className="font-semibold">Success</span> = {totals.successful}
+              </span>
+              <span>
+                <span className="font-semibold">Unsuccess</span> = {totals.unsuccessful}
+              </span>
+            </div>
 
-  {/* Under Remu column */}
-  <div className="absolute right-0 top-0 font-bold whitespace-nowrap">
-    Total = {totals.remuSum.toLocaleString('en-IN')}.00/-
-  </div>
-</div>
+            {/* Under Remu column */}
+            <div className="absolute right-0 top-0 font-bold whitespace-nowrap">
+              Total = {totals.remuSum.toLocaleString('en-IN')}.00/-
+            </div>
+          </div>
 
           {/* Signature block */}
           <div className="mt-12 flex justify-end">
@@ -287,7 +294,6 @@ function RecordRow({
         <span className="text-ink-400">|</span>
         <span>{record.firstParty} vs. {record.secondParty}</span>
         <span className="text-ink-400">|</span>
-        <span className="font-medium">{record.statementMonth} {record.statementYear}</span>
       </div>
       <button
         onClick={() => setConfirm(true)}

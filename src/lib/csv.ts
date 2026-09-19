@@ -2,8 +2,6 @@ import type { MediationRecord } from '@/types';
 import { formatDateDMY } from './format';
 
 const HEADERS = [
-  'Statement Month',
-  'Statement Year',
   'Mediation Case No.',
   'Decision',
   'Case No.',
@@ -29,8 +27,6 @@ function recordToRow(r: MediationRecord): string {
   const mediationDates = (r.mediationDates || []).map(formatDateDMY).join(', ');
   const reffDate = r.reffDate ? formatDateDMY(r.reffDate) : '';
   return [
-    r.statementMonth,
-    r.statementYear,
     mediationCaseNo,
     r.decision,
     caseNo,

@@ -29,7 +29,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-ink-900">
       {/* Header */}
       <header className="no-print sticky top-0 z-30 border-b border-ink-200/80 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
@@ -42,10 +42,11 @@ export default function App() {
                 Legal Mediation Collector
               </h1>
               <p className="hidden text-xs text-ink-400 sm:block">
-                Monthly mediation statement data entry &amp; summary
+                Mediation statement data entry &amp; summary
               </p>
             </div>
           </div>
+
           <nav className="flex items-center gap-1 rounded-lg bg-ink-100 p-1">
             <TabButton
               active={tab === 'entry'}
@@ -53,6 +54,7 @@ export default function App() {
               icon={<ClipboardList className="h-4 w-4" />}
               label="Entry"
             />
+
             <TabButton
               active={tab === 'dashboard'}
               onClick={() => setTab('dashboard')}
@@ -70,14 +72,16 @@ export default function App() {
           {tab === 'entry' ? (
             <div className="mx-auto max-w-3xl">
               <div className="mb-7">
-                <h2 className="font-serif text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl">
+                <h2 className="font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl">
                   New Mediation Record
                 </h2>
-                <p className="mt-1.5 text-sm text-ink-500">
-                  Enter the details for this month's mediation statement. Fields marked{' '}
+
+                <p className="mt-1.5 text-sm text-ink-300">
+                  Enter the details for this mediation statement. Fields marked{' '}
                   <span className="font-semibold text-gold-500">*</span> are required.
                 </p>
               </div>
+
               <EntryForm onSave={handleSave} />
             </div>
           ) : (
@@ -89,7 +93,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="no-print border-t border-ink-200/60 py-6">
+      <footer className="no-print border-t border-ink-700 py-6">
         <p className="mx-auto max-w-6xl px-4 text-center text-xs text-ink-400 sm:px-6">
           Legal Mediation Data Collector · Data stored locally in your browser
         </p>
@@ -121,7 +125,9 @@ function TabButton({
       }`}
     >
       {icon}
+
       <span className="hidden sm:inline">{label}</span>
+
       {badge !== undefined && badge > 0 && (
         <span className="ml-0.5 rounded-full bg-gold-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
           {badge}
