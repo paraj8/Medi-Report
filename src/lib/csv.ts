@@ -22,7 +22,7 @@ function escapeCsv(value: string): string {
 
 function recordToRow(r: MediationRecord): string {
   const mediationCaseNo = `${r.mediationCasePart}/${r.mediationCaseYear}`;
-  const caseNo = `${r.caseNoPrefix} ${r.caseNoNumber}/${r.caseNoYear}`;
+  const caseNo = `${r.caseNoPrefix} ${r.caseNoNumber}${r.caseNoSuffix || ''}/${r.caseNoYear}`;
   const remuLabel = `₹${Number(r.remu || 0).toLocaleString('en-IN')}/-`;
   const mediationDates = (r.mediationDates || []).map(formatDateDMY).join(', ');
   const reffDate = r.reffDate ? formatDateDMY(r.reffDate) : '';

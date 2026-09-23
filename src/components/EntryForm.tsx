@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   CalendarPlus,
   CheckCircle2,
@@ -25,17 +25,27 @@ import {
 import { generateId } from '@/lib/storage';
 import { OtherSelect } from '@/components/OtherSelect';
 import { OtherInput } from '@/components/OtherInput';
+import { EntryFormMobile } from '@/components/EntryFormMobile';
 
 interface EntryFormProps {
   onSave: (record: MediationRecord) => void;
+  editingRecord?: MediationRecord | null;
+  onCancelEdit?: () => void;
 }
 
-const emptyForm = (): Omit<MediationRecord, 'id' | 'createdAt'> => ({
+export type EntryFormValues = Omit<MediationRecord, 'id' | 'createdAt' | 'sortOrder'>;
+export type EntryFormUpdate = <K extends keyof EntryFormValues>(
+  key: K,
+  value: EntryFormValues[K],
+) => void;
+
+const emptyForm = (): EntryFormValues => ({
   mediationCasePart: '',
   mediationCaseYear: '2026',
   decision: 'Successful',
   caseNoPrefix: '',
   caseNoNumber: '',
+  caseNoSuffix: '',
   caseNoYear: '2026',
   reffDate: '',
   firstParty: '',
@@ -45,12 +55,35 @@ const emptyForm = (): Omit<MediationRecord, 'id' | 'createdAt'> => ({
   remu: '5000',
 });
 
-export function EntryForm({ onSave }: EntryFormProps) {
+function normalizeCaseNoSuffix(value: string): string {
+  const cleaned = value.trim().replace(/^\(+|\)+$/g, '');
+  return cleaned ? `(${cleaned})` : '';
+}
+
+function displayCaseNoSuffix(value: string): string {
+  return value.trim().replace(/^\(+|\)+$/g, '');
+}
+
+export function EntryForm({ editingRecord, onSave, onCancelEdit }: EntryFormProps) {
   const [form, setForm] = useState(emptyForm());
   const [errors, setErrors] = useState<RecordErrors>({});
   const [toast, setToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('Record saved successfully');
 
-  const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
+  useEffect(() => {
+    if (editingRecord) {
+      setForm({
+        ...emptyForm(),
+        ...editingRecord,
+        caseNoSuffix: displayCaseNoSuffix(editingRecord.caseNoSuffix ?? ''),
+      });
+    } else {
+      setForm(emptyForm());
+    }
+    setErrors({});
+  }, [editingRecord]);
+
+  const update: EntryFormUpdate = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     if (errors[key as keyof RecordErrors]) {
       setErrors((prev) => ({ ...prev, [key]: undefined }));
@@ -78,7 +111,7 @@ export function EntryForm({ onSave }: EntryFormProps) {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (ev: React.FormEvent) => {
+  const handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
     if (!validate()) {
       const firstError = document.querySelector('[data-error="true"]');
@@ -88,14 +121,18 @@ export function EntryForm({ onSave }: EntryFormProps) {
     const record: MediationRecord = {
       ...form,
       mediationDates: form.mediationDates.filter((d) => d.trim() !== ''),
-      id: generateId(),
-      createdAt: new Date().toISOString(),
+      caseNoSuffix: normalizeCaseNoSuffix(form.caseNoSuffix),
+      id: editingRecord?.id ?? generateId(),
+      sortOrder: editingRecord?.sortOrder ?? 0,
+      createdAt: editingRecord?.createdAt ?? new Date().toISOString(),
     };
+    const wasEditing = Boolean(editingRecord);
     onSave(record);
     setForm(emptyForm());
     setErrors({});
   
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    setToastMessage(wasEditing ? 'Record updated successfully' : 'Record saved successfully');
     setToast(true);
     setTimeout(() => setToast(false), 2800);
   };
@@ -105,8 +142,26 @@ export function EntryForm({ onSave }: EntryFormProps) {
     setErrors({});
   };
 
+  const handleCancelEdit = () => {
+    onCancelEdit?.();
+  };
+
+  const isMobile = useIsMobile();
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+    <>
+      {isMobile ? (
+        <EntryFormMobile
+          form={form}
+          errors={errors}
+          editingRecord={editingRecord}
+          onUpdate={update}
+          onSubmit={handleSubmit}
+          onReset={handleReset}
+          onCancelEdit={handleCancelEdit}
+        />
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-8" noValidate>
 
       {/* Field 1 — Mediation Case No. */}
       <FormSection icon={<Hash className="h-5 w-5 text-gold-500" />} title="Mediation Case No.">
@@ -158,7 +213,7 @@ export function EntryForm({ onSave }: EntryFormProps) {
 
       {/* Field 3 — Case No. */}
       <FormSection icon={<Gavel className="h-5 w-5 text-gold-500" />} title="Case No.">
-        <div className="grid gap-5 sm:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-4">
           <div data-error={!!errors.caseNoPrefix}>
             <OtherSelect
               id="case-prefix"
@@ -185,6 +240,22 @@ export function EntryForm({ onSave }: EntryFormProps) {
             {errors.caseNoNumber && (
               <p className="mt-1.5 text-xs font-medium text-red-500">{errors.caseNoNumber}</p>
             )}
+          </div>
+          <div>
+            <label className="field-label" htmlFor="case-suffix">
+              Suffix
+            </label>
+            <input
+              id="case-suffix"
+              type="text"
+              className="field-input"
+              placeholder="i"
+              value={form.caseNoSuffix}
+              onChange={(e) => update('caseNoSuffix', e.target.value)}
+            />
+            <p className="mt-1.5 text-xs text-ink-400">
+              Enter i, ii, iii... (parentheses are added automatically)
+            </p>
           </div>
           <div data-error={!!errors.caseNoYear}>
             <OtherInput
@@ -339,13 +410,21 @@ export function EntryForm({ onSave }: EntryFormProps) {
       <div className="flex flex-wrap items-center gap-3 pt-2">
         <button type="submit" className="btn-accent">
           <PlusCircle className="h-4 w-4" />
-          Save Record
+          {editingRecord ? 'Update Record' : 'Save Record'}
         </button>
+        {editingRecord && (
+          <button type="button" className="btn-ghost" onClick={handleCancelEdit}>
+            Cancel Edit
+          </button>
+        )}
         <button type="button" className="btn-ghost" onClick={handleReset}>
           <RotateCcw className="h-4 w-4" />
           Reset Form
         </button>
       </div>
+
+        </form>
+      )}
 
       {/* Toast */}
       <div
@@ -355,11 +434,28 @@ export function EntryForm({ onSave }: EntryFormProps) {
       >
         <div className="flex items-center gap-2.5 rounded-xl bg-ink-900 px-5 py-3 text-sm font-medium text-white shadow-card-lg">
           <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-          Record saved successfully
+          {toastMessage}
         </div>
       </div>
-    </form>
+    </>
   );
+}
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const handleChange = () => setIsMobile(mediaQuery.matches);
+
+    handleChange();
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  return isMobile;
 }
 
 function FormSection({

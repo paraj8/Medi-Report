@@ -1,5 +1,6 @@
 export interface MediationRecord {
   id: string;
+  sortOrder: number;
   // 1. Mediation Case No.
   mediationCasePart: string; // Field 1A — text before slash
   mediationCaseYear: string; // Field 1B — year dropdown
@@ -8,6 +9,7 @@ export interface MediationRecord {
   // 3. Case No.
   caseNoPrefix: string; // Field 3A — dropdown
   caseNoNumber: string; // Field 3B — text
+  caseNoSuffix: string; // Optional suffix, stored with parentheses
   caseNoYear: string; // Field 3C — year dropdown
   // Reff. Date (Reference Date)
   reffDate: string;
