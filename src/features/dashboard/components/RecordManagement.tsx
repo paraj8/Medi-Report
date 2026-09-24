@@ -1,0 +1,5 @@
+import { FileText, ListOrdered } from 'lucide-react';
+import type { MediationRecord } from '@/types';
+import { RecordRow } from './RecordRow';
+
+export function RecordManagement({ records, totalRecords, onDelete, onEdit, onArrange }: { records: MediationRecord[]; totalRecords: number; onDelete: (id: string) => void; onEdit: (record: MediationRecord) => void; onArrange: () => void }) { return <div className="no-print rounded-xl border border-ink-200 bg-white p-5 shadow-card"><div className="mb-4 flex items-center justify-between gap-3"><h2 className="flex items-center gap-2 text-sm font-semibold text-ink-700"><FileText className="h-4 w-4 text-gold-500" />Manage Records ({records.length})</h2><button type="button" className="btn-ghost" onClick={onArrange} disabled={totalRecords < 2}><ListOrdered className="h-4 w-4" />Arrange</button></div><div className="space-y-2">{records.map((record) => <RecordRow key={record.id} record={record} onDelete={onDelete} onEdit={onEdit} />)}</div></div>; }

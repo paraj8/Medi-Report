@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ClipboardList, LayoutDashboard, Scale, UploadCloud, DownloadCloud, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ClipboardList, LayoutDashboard, Scale } from 'lucide-react';
 import type { MediationRecord } from '@/types';
 import {
   loadRecords,
@@ -16,7 +17,10 @@ import { Dashboard } from '@/components/Dashboard';
 type Tab = 'entry' | 'dashboard';
 
 export default function App() {
-  const [tab, setTab] = useState<Tab>('entry');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const tab: Tab = location.pathname === '/dashboard' ? 'dashboard' : 'entry';
+  const setTab = (nextTab: Tab) => navigate(nextTab === 'dashboard' ? '/dashboard' : '/entry');
   const [records, setRecords] = useState<MediationRecord[]>([]);
   const [editingRecord, setEditingRecord] = useState<MediationRecord | null>(null);
   const [filterMonth, setFilterMonth] = useState('');
@@ -151,16 +155,6 @@ export default function App() {
             </div>
           ) : (
             <div>
-              <CloudActions
-                onUpload={handleUpdateCloud}
-                onDownload={handleSyncFromCloud}
-                uploadStatus={uploadStatus}
-                uploadMsg={uploadMsg}
-                downloadStatus={downloadStatus}
-                downloadMsg={downloadMsg}
-                recordCount={records.length}
-              />
-
               <Dashboard
                 records={records}
                 onDelete={handleDelete}
@@ -170,6 +164,12 @@ export default function App() {
                 filterYear={filterYear}
                 onFilterMonthChange={setFilterMonth}
                 onFilterYearChange={setFilterYear}
+                onUpdateCloud={handleUpdateCloud}
+                onSyncFromCloud={handleSyncFromCloud}
+                uploadStatus={uploadStatus}
+                uploadMsg={uploadMsg}
+                downloadStatus={downloadStatus}
+                downloadMsg={downloadMsg}
               />
             </div>
           )}
@@ -182,105 +182,6 @@ export default function App() {
           Legal Mediation Data Collector · Local storage with manual cloud sync
         </p>
       </footer>
-    </div>
-  );
-}
-
-function CloudActions({
-  onUpload,
-  onDownload,
-  uploadStatus,
-  uploadMsg,
-  downloadStatus,
-  downloadMsg,
-  recordCount,
-}: {
-  onUpload: () => void;
-  onDownload: () => void;
-  uploadStatus: CloudActionStatus;
-  uploadMsg: string;
-  downloadStatus: CloudActionStatus;
-  downloadMsg: string;
-  recordCount: number;
-}) {
-  return (
-    <div className="mb-6 rounded-xl border border-ink-200 bg-white p-4 shadow-card">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 className="text-sm font-semibold text-ink-700">Cloud Sync</h3>
-          <p className="mt-0.5 text-xs text-ink-400">
-            {recordCount} record{recordCount !== 1 ? 's' : ''} stored locally
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={onUpload}
-            disabled={uploadStatus === 'loading' || recordCount === 0}
-            className="flex items-center gap-2 rounded-lg bg-ink-900 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-ink-800 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {uploadStatus === 'loading' ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <UploadCloud className="h-4 w-4" />
-            )}
-            Update Cloud
-          </button>
-          <button
-            onClick={onDownload}
-            disabled={downloadStatus === 'loading'}
-            className="flex items-center gap-2 rounded-lg border border-ink-200 bg-white px-3.5 py-2 text-xs font-semibold text-ink-700 transition hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {downloadStatus === 'loading' ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <DownloadCloud className="h-4 w-4" />
-            )}
-            Sync from Cloud
-          </button>
-        </div>
-      </div>
-
-      {/* Status messages */}
-      <div className="mt-3 space-y-1.5">
-        {uploadStatus === 'success' && (
-          <StatusLine icon="check" text={uploadMsg} variant="success" />
-        )}
-        {uploadStatus === 'error' && (
-          <StatusLine icon="alert" text={uploadMsg} variant="error" />
-        )}
-        {downloadStatus === 'success' && (
-          <StatusLine icon="check" text={downloadMsg} variant="success" />
-        )}
-        {downloadStatus === 'error' && (
-          <StatusLine icon="alert" text={downloadMsg} variant="error" />
-        )}
-      </div>
-    </div>
-  );
-}
-
-function StatusLine({
-  icon,
-  text,
-  variant,
-}: {
-  icon: 'check' | 'alert';
-  text: string;
-  variant: 'success' | 'error';
-}) {
-  const colors =
-    variant === 'success'
-      ? 'text-green-600 bg-green-50'
-      : 'text-red-600 bg-red-50';
-
-  return (
-    <div className={`flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium ${colors}`}>
-      {icon === 'check' ? (
-        <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-      ) : (
-        <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-      )}
-      {text}
     </div>
   );
 }

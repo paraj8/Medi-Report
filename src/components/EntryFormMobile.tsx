@@ -23,6 +23,7 @@ import {
 } from '@/lib/options';
 import { OtherInput } from '@/components/OtherInput';
 import { OtherSelect } from '@/components/OtherSelect';
+import { CustomDatePicker } from '@/components/form/CustomDatePicker';
 import type { EntryFormUpdate, EntryFormValues } from '@/components/EntryForm';
 
 export interface EntryFormMobileProps {
@@ -224,25 +225,13 @@ export function EntryFormMobile({
         title="Reference Date"
       >
         <div data-error={!!errors.reffDate}>
-          <label
-            className="mobile-field-label"
-            htmlFor="mobile-reff-date"
-          >
-            Reference Date <span className="text-gold-500">*</span>
-          </label>
-
-          <input
+          <CustomDatePicker
             id="mobile-reff-date"
-            type="date"
-            className={`mobile-field-input ${
-              errors.reffDate
-                ? 'border-red-400 focus:ring-red-200'
-                : ''
-            }`}
+            label="Reference Date"
+            required
             value={form.reffDate}
-            onChange={(event) =>
-              onUpdate('reffDate', event.target.value)
-            }
+            error={!!errors.reffDate}
+            onChange={(value) => onUpdate('reffDate', value)}
           />
 
           {errors.reffDate && (
@@ -365,25 +354,14 @@ export function EntryFormMobile({
             <div key={index}>
               <div className="flex items-end gap-2">
                 <div className="min-w-0 flex-1">
-                  <label
-                    className="mobile-field-label"
-                    htmlFor={`mobile-mediation-date-${index}`}
-                  >
-                    Date {index + 1}
-                  </label>
-
-                  <input
+                  <CustomDatePicker
                     id={`mobile-mediation-date-${index}`}
-                    type="date"
-                    className={`mobile-field-input ${
-                      errors.mediationDates
-                        ? 'border-red-400 focus:ring-red-200'
-                        : ''
-                    }`}
+                    label={`Date ${index + 1}`}
                     value={date}
-                    onChange={(event) => {
+                    error={!!errors.mediationDates}
+                    onChange={(value) => {
                       const next = [...form.mediationDates];
-                      next[index] = event.target.value;
+                      next[index] = value;
                       onUpdate('mediationDates', next);
                     }}
                   />
