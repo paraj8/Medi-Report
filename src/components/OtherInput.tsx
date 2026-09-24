@@ -1,3 +1,4 @@
+
 import { OTHER } from '@/lib/options';
 
 interface OtherInputProps {
@@ -12,12 +13,15 @@ interface OtherInputProps {
   icon?: React.ReactNode;
   selectPlaceholder?: string;
   inputPlaceholder?: string;
+  compact?: boolean;
 }
 
 /**
- * Year-style select with "Other": when "Other" is chosen, reveals a text input.
- * Unlike OtherSelect, the select only ever holds a preset year or "Other";
- * the text input carries the custom value.
+ * Year-style select with "Other": when "Other" is chosen,
+ * reveals a text input for custom entry.
+ *
+ * `compact` is used by the mobile form only.
+ * Desktop styling remains unchanged when compact is false.
  */
 export function OtherInput({
   id,
@@ -31,42 +35,67 @@ export function OtherInput({
   icon,
   selectPlaceholder = 'Select…',
   inputPlaceholder = 'Enter custom value',
+  compact = false,
 }: OtherInputProps) {
   const isOther = value === OTHER;
   const selectVal = isOther ? OTHER : value;
 
+  const labelClass = compact
+    ? 'mobile-field-label'
+    : 'field-label';
+
+  const selectClass = compact
+    ? 'mobile-field-select'
+    : 'field-select';
+
+  const inputClass = compact
+    ? 'mobile-field-input'
+    : 'field-input';
+
   return (
     <div>
       {label && (
-        <label htmlFor={id} className="field-label">
+        <label htmlFor={id} className={labelClass}>
           {icon}
           {label}
           {required && <span className="text-gold-500">*</span>}
         </label>
       )}
+
       <div className="relative">
         <select
           id={id}
-          className={`field-select ${error ? 'border-red-400 focus:border-red-400 focus:ring-red-200' : ''}`}
+          className={`${selectClass} ${
+            error
+              ? 'border-red-400 focus:border-red-400 focus:ring-red-200'
+              : ''
+          }`}
           value={selectVal}
           onChange={(e) => onChange(e.target.value)}
         >
           <option value="" disabled>
             {selectPlaceholder}
           </option>
+
           {options.map((opt) => (
             <option key={opt} value={opt}>
               {opt}
             </option>
           ))}
+
           <option value={OTHER}>{OTHER}</option>
         </select>
       </div>
+
       {isOther && (
-        <div className="mt-3 animate-slide-down">
+        <div className="mt-2 animate-slide-down">
           <input
             type="text"
-            className={`field-input ${error ? 'border-red-400 focus:border-red-400 focus:ring-red-200' : ''}`}
+            className={`${inputClass} ${
+              error
+                ? 'border-red-400 focus:border-red-400 focus:ring-red-200'
+                : ''
+            }`}
             placeholder={placeholder ?? inputPlaceholder}
             value=""
             onChange={(e) => onChange(e.target.value)}
@@ -74,7 +103,13 @@ export function OtherInput({
           />
         </div>
       )}
-      {error && <p className="mt-1.5 text-xs font-medium text-red-500">{error}</p>}
+
+      {error && (
+        <p className="mt-1 text-[11px] font-medium leading-snug text-red-500">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
+

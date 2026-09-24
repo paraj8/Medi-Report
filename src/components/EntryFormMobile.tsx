@@ -48,12 +48,15 @@ export function EntryFormMobile({
     <form onSubmit={onSubmit} className="space-y-3" noValidate>
       {/* Mediation Case */}
       <MobileSection
-        icon={<Hash className="h-4.5 w-4.5 text-gold-500" />}
+        icon={<Hash className="h-4 w-4 text-gold-500" />}
         title="Mediation Case"
       >
         <div className="grid grid-cols-[1fr_0.85fr] gap-3">
           <div data-error={!!errors.mediationCasePart}>
-            <label className="mobile-field-label" htmlFor="mobile-med-part">
+            <label
+              className="mobile-field-label"
+              htmlFor="mobile-med-part"
+            >
               Case Part <span className="text-gold-500">*</span>
             </label>
 
@@ -83,11 +86,14 @@ export function EntryFormMobile({
               label="Year"
               options={YEARS}
               value={form.mediationCaseYear}
-              onChange={(value) => onUpdate('mediationCaseYear', value)}
+              onChange={(value) =>
+                onUpdate('mediationCaseYear', value)
+              }
               required
               selectPlaceholder="Year…"
               placeholder="Year"
               error={errors.mediationCaseYear}
+              compact
             />
           </div>
         </div>
@@ -95,7 +101,7 @@ export function EntryFormMobile({
 
       {/* Decision */}
       <MobileSection
-        icon={<Scale className="h-4.5 w-4.5 text-gold-500" />}
+        icon={<Scale className="h-4 w-4 text-gold-500" />}
         title="Decision"
       >
         <OtherSelect
@@ -106,12 +112,13 @@ export function EntryFormMobile({
           onChange={(value) => onUpdate('decision', value)}
           required
           error={errors.decision}
+          compact
         />
       </MobileSection>
 
       {/* Case Number */}
       <MobileSection
-        icon={<Gavel className="h-4.5 w-4.5 text-gold-500" />}
+        icon={<Gavel className="h-4 w-4 text-gold-500" />}
         title="Case Number"
       >
         <div className="space-y-3">
@@ -125,11 +132,13 @@ export function EntryFormMobile({
               onChange={(value) => onUpdate('caseNoPrefix', value)}
               required
               error={errors.caseNoPrefix}
+              compact
             />
           </div>
 
           {/* Number + Suffix + Year */}
           <div className="grid grid-cols-[1.2fr_0.75fr_0.9fr] gap-2.5">
+            {/* Number */}
             <div data-error={!!errors.caseNoNumber}>
               <label
                 className="mobile-field-label"
@@ -158,6 +167,7 @@ export function EntryFormMobile({
               )}
             </div>
 
+            {/* Suffix */}
             <div>
               <label
                 className="mobile-field-label"
@@ -181,23 +191,28 @@ export function EntryFormMobile({
               />
             </div>
 
+            {/* Year */}
             <div data-error={!!errors.caseNoYear}>
               <OtherInput
                 id="mobile-case-year"
                 label="Year"
                 options={YEARS}
                 value={form.caseNoYear}
-                onChange={(value) => onUpdate('caseNoYear', value)}
+                onChange={(value) =>
+                  onUpdate('caseNoYear', value)
+                }
                 required
                 selectPlaceholder="Year…"
                 placeholder="Year"
                 error={errors.caseNoYear}
+                compact
               />
             </div>
           </div>
 
           <p className="text-[11px] leading-snug text-ink-400">
-            Suffix is optional. Enter <span className="font-medium">i</span>,
+            Suffix is optional. Enter{' '}
+            <span className="font-medium">i</span>,
             <span className="font-medium"> ii</span>, etc.
           </p>
         </div>
@@ -205,11 +220,14 @@ export function EntryFormMobile({
 
       {/* Reference Date */}
       <MobileSection
-        icon={<CalendarClock className="h-4.5 w-4.5 text-gold-500" />}
+        icon={<CalendarClock className="h-4 w-4 text-gold-500" />}
         title="Reference Date"
       >
         <div data-error={!!errors.reffDate}>
-          <label className="mobile-field-label" htmlFor="mobile-reff-date">
+          <label
+            className="mobile-field-label"
+            htmlFor="mobile-reff-date"
+          >
             Reference Date <span className="text-gold-500">*</span>
           </label>
 
@@ -227,18 +245,24 @@ export function EntryFormMobile({
             }
           />
 
-          {errors.reffDate && <MobileError text={errors.reffDate} />}
+          {errors.reffDate && (
+            <MobileError text={errors.reffDate} />
+          )}
         </div>
       </MobileSection>
 
       {/* Parties */}
       <MobileSection
-        icon={<Users className="h-4.5 w-4.5 text-gold-500" />}
+        icon={<Users className="h-4 w-4 text-gold-500" />}
         title="Parties"
       >
         <div className="space-y-3">
+          {/* First Party */}
           <div data-error={!!errors.firstParty}>
-            <label className="mobile-field-label" htmlFor="mobile-first-party">
+            <label
+              className="mobile-field-label"
+              htmlFor="mobile-first-party"
+            >
               First Party <span className="text-gold-500">*</span>
             </label>
 
@@ -262,6 +286,7 @@ export function EntryFormMobile({
             )}
           </div>
 
+          {/* Second Party */}
           <div data-error={!!errors.secondParty}>
             <label
               className="mobile-field-label"
@@ -294,7 +319,7 @@ export function EntryFormMobile({
 
       {/* Court */}
       <MobileSection
-        icon={<Landmark className="h-4.5 w-4.5 text-gold-500" />}
+        icon={<Landmark className="h-4 w-4 text-gold-500" />}
         title="Name of Court"
       >
         <OtherSelect
@@ -305,12 +330,13 @@ export function EntryFormMobile({
           onChange={(value) => onUpdate('nameOfCourt', value)}
           required
           error={errors.nameOfCourt}
+          compact
         />
       </MobileSection>
 
       {/* Remuneration */}
       <MobileSection
-        icon={<Wallet className="h-4.5 w-4.5 text-gold-500" />}
+        icon={<Wallet className="h-4 w-4 text-gold-500" />}
         title="Remuneration"
       >
         <OtherSelect
@@ -322,15 +348,19 @@ export function EntryFormMobile({
           required
           error={errors.remu}
           placeholder="Select amount…"
+          compact
         />
       </MobileSection>
 
       {/* Mediation Dates */}
       <MobileSection
-        icon={<CalendarPlus className="h-4.5 w-4.5 text-gold-500" />}
+        icon={<CalendarPlus className="h-4 w-4 text-gold-500" />}
         title="Mediation Dates"
       >
-        <div data-error={!!errors.mediationDates} className="space-y-2.5">
+        <div
+          data-error={!!errors.mediationDates}
+          className="space-y-2.5"
+        >
           {form.mediationDates.map((date, index) => (
             <div key={index}>
               <div className="flex items-end gap-2">
@@ -386,7 +416,10 @@ export function EntryFormMobile({
           <button
             type="button"
             onClick={() =>
-              onUpdate('mediationDates', [...form.mediationDates, ''])
+              onUpdate('mediationDates', [
+                ...form.mediationDates,
+                '',
+              ])
             }
             className="flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-dashed border-gold-300 bg-gold-50/50 px-3 text-sm font-medium text-gold-700 transition active:scale-[0.99] hover:border-gold-400 hover:bg-gold-50"
           >
@@ -446,6 +479,7 @@ function MobileSection({
     <section className="rounded-xl border border-ink-200 bg-white p-3.5 shadow-card">
       <div className="mb-3 flex items-center gap-2">
         {icon}
+
         <h2 className="text-[15px] font-semibold tracking-tight text-ink-900">
           {title}
         </h2>
@@ -463,3 +497,4 @@ function MobileError({ text }: { text: string }) {
     </p>
   );
 }
+
