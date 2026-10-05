@@ -35,7 +35,7 @@ import { EntryFormMobile } from '@/components/EntryFormMobile';
 import { CustomDatePicker } from '@/components/form/CustomDatePicker';
 
 interface EntryFormProps {
-  onSave: (record: MediationRecord) => void;
+  onSave: (record: Omit<MediationRecord, 'sortOrder'>) => void;
   editingRecord?: MediationRecord | null;
   onCancelEdit?: () => void;
 }
@@ -207,7 +207,7 @@ export function EntryForm({
       return;
     }
 
-    const record: MediationRecord = {
+    const record: Omit<MediationRecord, 'sortOrder'> = {
       ...form,
       mediationDates: form.mediationDates.filter(
         (d) => d.trim() !== '',
@@ -216,7 +216,6 @@ export function EntryForm({
         form.caseNoSuffix,
       ),
       id: editingRecord?.id ?? generateId(),
-      sortOrder: editingRecord?.sortOrder ?? 0,
       createdAt:
         editingRecord?.createdAt ??
         new Date().toISOString(),

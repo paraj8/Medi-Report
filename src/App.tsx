@@ -41,16 +41,24 @@ export default function App() {
     saveRecords(next);
   };
 
-  const handleSave = (record: MediationRecord) => {
+  const handleSave = (record: Omit<MediationRecord, 'sortOrder'>) => {
     if (editingRecord) {
-      persist(records.map((existing) => (existing.id === record.id ? record : existing)));
+      persist(records.map((existing) => (
+        existing.id === record.id
+          ? { ...record, sortOrder: existing.sortOrder }
+          : existing
+      )));
       setEditingRecord(null);
       return;
     }
 
     const recordWithId = { ...record };
     if (!recordWithId.id) recordWithId.id = generateId();
-    persist(normalizeRecords([recordWithId, ...records]));
+    const nextSortOrder = records.reduce(
+      (maxSortOrder, existing) => Math.max(maxSortOrder, existing.sortOrder),
+      -1,
+    ) + 1;
+    persist(normalizeRecords([...records, { ...recordWithId, sortOrder: nextSortOrder }]));
   };
 
   const handleEdit = (record: MediationRecord) => {
