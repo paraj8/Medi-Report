@@ -2,9 +2,9 @@
 import {
   AlertCircle,
   CheckCircle2,
-  Download,
   DownloadCloud,
   FileDown,
+  FileText,
   Loader2,
   Printer,
   UploadCloud,
@@ -16,7 +16,7 @@ interface DashboardActionsProps {
   onSyncFromCloud: () => void;
   onPrint: () => void;
   onDownloadPdf: () => void;
-  onExportCsv: () => void;
+  onNavigateDocuments: () => void;
   uploadStatus: CloudActionStatus;
   uploadMsg: string;
   downloadStatus: CloudActionStatus;
@@ -32,7 +32,7 @@ export function DashboardActions({
   onSyncFromCloud,
   onPrint,
   onDownloadPdf,
-  onExportCsv,
+  onNavigateDocuments,
   uploadStatus,
   uploadMsg,
   downloadStatus,
@@ -137,12 +137,11 @@ export function DashboardActions({
 
             <div className="flex-1" onClick={!isReportPeriodSelected ? onPeriodValidation : undefined}>
               <button
-                onClick={onExportCsv}
-                disabled={!isReportPeriodSelected || reportCount === 0}
-                className={`btn-ghost min-h-9 w-full px-2 py-1.5 text-xs ${!isReportPeriodSelected ? 'pointer-events-none' : ''}`}
+                onClick={onNavigateDocuments}
+                className="btn-ghost min-h-9 w-full px-2 py-1.5 text-xs"
               >
-              <Download className="h-3.5 w-3.5" />
-              CSV
+              <FileText className="h-3.5 w-3.5" />
+              Documents
               </button>
             </div>
           </div>
@@ -196,4 +195,3 @@ function StatusLine({
     </div>
   );
 }
-

@@ -13,12 +13,14 @@ import {
 } from '@/lib/storage';
 import { EntryForm } from '@/components/EntryForm';
 import { Dashboard } from '@/components/Dashboard';
+import { DocumentsPage } from '@/features/documents/pages/DocumentsPage';
 
 type Tab = 'entry' | 'dashboard';
 
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
+  const isDocumentsPage = location.pathname === '/documents';
   const tab: Tab = location.pathname === '/dashboard' ? 'dashboard' : 'entry';
   const setTab = (nextTab: Tab) => navigate(nextTab === 'dashboard' ? '/dashboard' : '/entry');
   const [records, setRecords] = useState<MediationRecord[]>([]);
@@ -121,14 +123,14 @@ export default function App() {
           <div className="flex items-center gap-2">
             <nav className="flex items-center gap-1 rounded-lg bg-ink-100 p-1">
               <TabButton
-                active={tab === 'entry'}
+                active={!isDocumentsPage && tab === 'entry'}
                 onClick={() => setTab('entry')}
                 icon={<ClipboardList className="h-4 w-4" />}
                 label="Entry"
               />
 
               <TabButton
-                active={tab === 'dashboard'}
+                active={!isDocumentsPage && tab === 'dashboard'}
                 onClick={() => setTab('dashboard')}
                 icon={<LayoutDashboard className="h-4 w-4" />}
                 label="Summary"
@@ -141,8 +143,15 @@ export default function App() {
 
       {/* Main */}
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-        <div key={tab} className="animate-fade-in">
-          {tab === 'entry' ? (
+        <div key={isDocumentsPage ? 'documents' : tab} className="animate-fade-in">
+          {isDocumentsPage ? (
+            <DocumentsPage
+              records={records}
+              month={filterMonth}
+              year={filterYear}
+              onBackToDashboard={() => navigate('/dashboard')}
+            />
+          ) : tab === 'entry' ? (
             <div className="mx-auto max-w-3xl">
               <div className="mb-7">
                 <h2 className="font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -174,6 +183,7 @@ export default function App() {
                 onFilterYearChange={setFilterYear}
                 onUpdateCloud={handleUpdateCloud}
                 onSyncFromCloud={handleSyncFromCloud}
+                onNavigateDocuments={() => navigate('/documents')}
                 uploadStatus={uploadStatus}
                 uploadMsg={uploadMsg}
                 downloadStatus={downloadStatus}

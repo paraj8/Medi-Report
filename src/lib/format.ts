@@ -43,12 +43,6 @@ export function isoYear(iso: string): string {
   return parts[0];
 }
 
-/** Join an array of ISO date strings into a comma-separated display string (for CSV). */
-export function formatMediationDates(dates: string[]): string {
-  if (!dates || dates.length === 0) return '—';
-  return dates.map(formatDateDMY).join(', ');
-}
-
 /** Format mediation dates as an array of display strings for stacked (vertical) rendering. */
 export function formatMediationDatesStacked(dates: string[]): string[] {
   if (!dates || dates.length === 0) return ['—'];

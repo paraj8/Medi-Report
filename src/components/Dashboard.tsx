@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { MediationRecord } from '@/types';
-import { recordsToCsv, downloadCsv } from '@/lib/csv';
+import { getReportStatistics } from '@/lib/reportData';
 import { generateMediationReport } from '@/lib/pdf';
 import type { CloudActionStatus } from '@/lib/storage';
 import { DashboardActions } from '@/features/dashboard/components/DashboardActions';
@@ -24,9 +24,10 @@ interface DashboardProps {
   downloadMsg?: string;
   onUpdateCloud?: () => void;
   onSyncFromCloud?: () => void;
+  onNavigateDocuments: () => void;
 }
 
-export function Dashboard({ records, onDelete, onEdit, onReorder, filterMonth, filterYear, onFilterMonthChange, onFilterYearChange, uploadStatus = 'idle', uploadMsg = '', downloadStatus = 'idle', downloadMsg = '', onUpdateCloud = () => undefined, onSyncFromCloud = () => undefined }: DashboardProps) {
+export function Dashboard({ records, onDelete, onEdit, onReorder, filterMonth, filterYear, onFilterMonthChange, onFilterYearChange, uploadStatus = 'idle', uploadMsg = '', downloadStatus = 'idle', downloadMsg = '', onUpdateCloud = () => undefined, onSyncFromCloud = () => undefined, onNavigateDocuments }: DashboardProps) {
   const orderedRecords = useMemo(() => [...records].sort((a, b) => a.sortOrder - b.sortOrder), [records]);
   const filtered = useMemo(() => orderedRecords.filter((record) => record.reffDate), [orderedRecords]);
   const [isArrangeOpen, setIsArrangeOpen] = useState(false);
@@ -39,11 +40,7 @@ export function Dashboard({ records, onDelete, onEdit, onReorder, filterMonth, f
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isArrangeOpen]);
 
-  const totals = useMemo(() => ({
-    successful: filtered.filter((record) => record.decision === 'Successful').length,
-    unsuccessful: filtered.filter((record) => record.decision === 'Unsuccessful').length,
-    remuneration: filtered.reduce((sum, record) => { const value = Number(record.remu); return sum + (Number.isFinite(value) ? value : 0); }, 0),
-  }), [filtered]);
+  const totals = useMemo(() => getReportStatistics(filtered), [filtered]);
 
   const isReportPeriodSelected = Boolean(filterMonth && filterYear);
 
@@ -51,11 +48,10 @@ export function Dashboard({ records, onDelete, onEdit, onReorder, filterMonth, f
     if (isReportPeriodSelected) setShowPeriodValidation(false);
   }, [isReportPeriodSelected]);
 
-  const handleExportCsv = () => downloadCsv(`mediation_${filterMonth ? filterMonth.slice(0, 3) : 'All'}_${filterYear || 'All'}.csv`, recordsToCsv(filtered));
   const handleDownloadPdf = () => generateMediationReport(filtered, { month: filterMonth, year: filterYear });
 
   return <div className="space-y-6">
-    <DashboardActions onUpdateCloud={onUpdateCloud} onSyncFromCloud={onSyncFromCloud} onPrint={() => window.print()} onDownloadPdf={handleDownloadPdf} onExportCsv={handleExportCsv} uploadStatus={uploadStatus} uploadMsg={uploadMsg} downloadStatus={downloadStatus} downloadMsg={downloadMsg} recordCount={records.length} reportCount={filtered.length} isReportPeriodSelected={isReportPeriodSelected} onPeriodValidation={() => setShowPeriodValidation(true)} />
+    <DashboardActions onUpdateCloud={onUpdateCloud} onSyncFromCloud={onSyncFromCloud} onPrint={() => window.print()} onDownloadPdf={handleDownloadPdf} onNavigateDocuments={onNavigateDocuments} uploadStatus={uploadStatus} uploadMsg={uploadMsg} downloadStatus={downloadStatus} downloadMsg={downloadMsg} recordCount={records.length} reportCount={filtered.length} isReportPeriodSelected={isReportPeriodSelected} onPeriodValidation={() => setShowPeriodValidation(true)} />
     <ReportFilters filterMonth={filterMonth} filterYear={filterYear} onFilterMonthChange={onFilterMonthChange} onFilterYearChange={onFilterYearChange} showPeriodValidation={showPeriodValidation} />
     <Report records={filtered} filterMonth={filterMonth} filterYear={filterYear} {...totals} />
     {filtered.length > 0 && <RecordManagement records={filtered} totalRecords={orderedRecords.length} onDelete={onDelete} onEdit={onEdit} onArrange={() => setIsArrangeOpen(true)} />}
